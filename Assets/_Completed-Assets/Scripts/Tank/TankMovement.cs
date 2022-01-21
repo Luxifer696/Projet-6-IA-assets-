@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 namespace Complete
 {
@@ -19,6 +20,9 @@ namespace Complete
         private float m_TurnInputValue;             // The current value of the turn input.
         private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
         private ParticleSystem[] m_particleSystems; // References to all the particles systems used by the Tanks
+
+        //TESTING 
+        private NavMeshAgent navMeshAgentRef;
 
         private void Awake ()
         {
@@ -67,6 +71,14 @@ namespace Complete
 
             // Store the original pitch of the audio source.
             m_OriginalPitch = m_MovementAudio.pitch;
+
+            //TESTING
+            navMeshAgentRef = GetComponent<NavMeshAgent>();
+
+            if(m_PlayerNumber == 2)
+            {
+                Destroy(navMeshAgentRef);
+            }
         }
 
 
