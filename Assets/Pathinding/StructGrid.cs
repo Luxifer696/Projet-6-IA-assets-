@@ -10,11 +10,29 @@ public struct StructGrid
 
     public List<Vector3> PointList;
 
+    public StructGrid (Vector3 newOriginPoint, float MaxHorizontalDistance, float MaxVerticalDistance)
+    {
+        OriginPoint = newOriginPoint;
+
+        TopRightForwardPoint = new Vector3(
+            OriginPoint.x + MaxHorizontalDistance / 2,
+            OriginPoint.y + MaxVerticalDistance / 2,
+            OriginPoint.z + MaxHorizontalDistance / 2);
+
+        BottomLeftBackwardPoint = new Vector3(
+            OriginPoint.x - MaxHorizontalDistance / 2,
+            OriginPoint.y - MaxVerticalDistance / 2,
+            OriginPoint.z - MaxHorizontalDistance / 2);
+
+        PointList = new List<Vector3>();
+
+        FillPointList();
+    }
+
     public void FillPointList()
     {
         if (OriginPoint != null && BottomLeftBackwardPoint != null && TopRightForwardPoint != null)
         {
-            PointList = new List<Vector3>(); // Instanciement de la list (sinon nullRef)
             Vector3 currentPoint = BottomLeftBackwardPoint; // Le remplissage se fait depuis le point BottomLeftBackwardPoint
 
             while (currentPoint.x <= TopRightForwardPoint.x)
@@ -46,29 +64,61 @@ public struct StructGrid
         }
     }
 
-    public bool GetOverlapPoint(int pointIndice)
+    public bool Contains(Vector3 position)
     {
-        //Use the OverlapBox to detect if there are any other colliders within this box area.
-        //Use the GameObject's centre, half the size (as a radius) and rotation. This creates an invisible box around your GameObject.
-        Vector3 positionToLookAt = PointList[pointIndice];
-        Vector3 detectionAreaSize = new Vector3(0.5f, 0.5f, 0.5f);
-        Collider[] hitColliders = Physics.OverlapBox(positionToLookAt, detectionAreaSize, Quaternion.identity);
+        return PointList.Contains(position);
+    }
 
-        Debug.Log("CC");
-
-        //Check when there is a new collider coming into contact with the box
-        for (int indice = 0; indice < hitColliders.Length; indice++)
+    // Ces deux méthodes créent une hitbox pour détecter si un objet est présent dans l'une des position du quadrillage
+    public bool IsPointOverlapping(Vector3 areaCenter)
+    {
+        if (Contains(areaCenter))
         {
-            Debug.Log("Hit : " + hitColliders[indice].name);
+            //Use the OverlapBox to detect if there are any other colliders within this box area.
+            //Use the GameObject's centre, half the size (as a radius) and rotation. This creates an invisible box around your GameObject.
+            Vector3 areaSize = new Vector3(0.5f, 0.5f, 0.5f);
+            Collider[] hitColliders = Physics.OverlapBox(areaCenter, areaSize, Quaternion.identity);
 
-            if(hitColliders[indice] != null)
+            // Go inside the loop if object detected
+            for (int indice = 0; indice < hitColliders.Length; indice++)
             {
-                // Object detected
+                //Debug.Log("Hit : " + hitColliders[indice].name);
+
                 return true;
             }
+        }
+        else
+        {
+            Debug.LogError("positionToLookAt is not in the index !");
         }
 
         // No object detected
         return false;
+    }
+
+    public GameObject GetOverlappingObject(Vector3 areaCenter)
+    {
+        if (Contains(areaCenter))
+        {
+            //Use the OverlapBox to detect if there are any other colliders within this box area.
+            //Use the GameObject's centre, half the size (as a radius) and rotation. This creates an invisible box around your GameObject.
+            Vector3 areaSize = new Vector3(0.5f, 0.5f, 0.5f);
+            Collider[] hitColliders = Physics.OverlapBox(areaCenter, areaSize, Quaternion.identity);
+
+            // Go inside the loop if object detected
+            for (int indice = 0; indice < hitColliders.Length; indice++)
+            {
+                //Debug.Log("Hit : " + hitColliders[indice].name);
+
+                return hitColliders[indice].gameObject;
+            }
+        }
+        else
+        {
+            Debug.LogError("positionToLookAt is not in the index !");
+        }
+
+        // No object detected
+        return null;
     }
 }

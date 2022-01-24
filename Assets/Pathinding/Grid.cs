@@ -9,20 +9,44 @@ public class Grid : MonoBehaviour
     private bool UpdateGridPosition = false;
 
     // Centre du quadrillage
+    [Tooltip("GameObject position by default")]
     public Vector3 OriginPoint;
 
     // Paramètre du quadrillage (nbr pair)
+    [Tooltip("Should be an even number")]
     public int MaxHorizontalDistance = 40;
+    [Tooltip("Should be an even number")]
     public int MaxVerticalDistance = 4;
+
+    // Guizmos
+    [SerializeField]
+    private bool ShowGrid = false;
+
+    [SerializeField]
+    private bool ShowDijskraSearch = false;
+
+    [SerializeField]
+    private bool ShowDijskraDirectPath = false;
 
     // Enregistre toute les coordonnées
     private StructGrid _structGrid;
 
-    void Start()
+    // Pathinding
+    private Dijkstra _dijkstra;
+
+    private void Awake()
     {
         OriginPoint = transform.position;
+        _structGrid = new StructGrid(OriginPoint, MaxHorizontalDistance, MaxVerticalDistance);
 
-        SetupStructGrid();
+        _dijkstra = GetComponent<Dijkstra>();
+    }
+
+    void Start()
+    {
+        _dijkstra.CreatePath(OriginPoint + Vector3.up, OriginPoint + Vector3.up + Vector3.right * 3 + Vector3.back * 7);
+        //_structGrid.ShowPointList();
+        //_structGrid.IsPointOverlapping(_structGrid.PointList[0]);
     }
 
     private void Update()
@@ -30,32 +54,10 @@ public class Grid : MonoBehaviour
         if(UpdateGridPosition)
         {
             OriginPoint = transform.position;
-            SetupStructGrid();
+            _structGrid = new StructGrid(OriginPoint, MaxHorizontalDistance, MaxVerticalDistance);
+
             UpdateGridPosition = false;
         }
-    }
-
-    private void SetupStructGrid()
-    {
-        _structGrid = new StructGrid();
-
-        _structGrid.OriginPoint = OriginPoint;
-
-        _structGrid.TopRightForwardPoint = new Vector3(
-            OriginPoint.x + MaxHorizontalDistance / 2,
-            OriginPoint.y + MaxVerticalDistance / 2,
-            OriginPoint.z + MaxHorizontalDistance / 2);
-
-        _structGrid.BottomLeftBackwardPoint = new Vector3(
-            OriginPoint.x - MaxHorizontalDistance / 2,
-            OriginPoint.y - MaxVerticalDistance / 2,
-            OriginPoint.z - MaxHorizontalDistance / 2);
-
-        _structGrid.FillPointList();
-        //_structGrid.ShowPointList();
-        _structGrid.GetOverlapPoint(0);
-
-        //Debug.Log(_structGrid.PointList.Contains(new Vector3(0, 0.5f, 0)));
     }
 
     public StructGrid GetStructGrid()
@@ -70,10 +72,31 @@ public class Grid : MonoBehaviour
         Gizmos.DrawSphere(_structGrid.TopRightForwardPoint, 0.2f);
         Gizmos.DrawSphere(_structGrid.BottomLeftBackwardPoint, 0.2f);
 
-        Gizmos.color = Color.blue;
-        foreach (var point in _structGrid.PointList)
+        if (ShowGrid)
         {
-            Gizmos.DrawSphere(point, 0.1f);
+            Gizmos.color = Color.blue;
+            foreach (var point in _structGrid.PointList)
+            {
+                Gizmos.DrawSphere(point, 0.1f);
+            }
+        }
+
+        if (ShowDijskraSearch)
+        {
+            Gizmos.color = Color.red;
+            foreach (var point in _dijkstra.GetPositionsToCheck())
+            {
+                Gizmos.DrawWireCube(point, new Vector3(1, 1, 1));
+            }
+        }
+
+        if (ShowDijskraDirectPath)
+        {
+            Gizmos.color = Color.green;
+            foreach (var point in _dijkstra.GetDirectPath())
+            {
+                Gizmos.DrawWireCube(point, new Vector3(1, 1, 1));
+            }
         }
     }
 }
