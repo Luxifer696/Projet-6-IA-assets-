@@ -2,52 +2,57 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Dijkstra : MonoBehaviour
+[CreateAssetMenu(menuName = "Pathinding/Dijskra")]
+public class Dijkstra : Pathinding
 {
     // Liste de position avec leur direction de provenance
     private Dictionary<Vector3, Vector3> _pathDictionary = new Dictionary<Vector3, Vector3>();
 
     private List<Vector3> _positionsToCheck = new List<Vector3>();
 
+    // Chemin reliant deux positions
     private List<Vector3> _directPath = new List<Vector3>();
 
-    private Vector3 _destination;
-
-    // Mon ensemble de coordonnées
-    private StructGrid _structGrid;
-
+    // Conditions d'arrêt
     private bool _isTherePositionToCheck;
     private bool _didIReachTheDestination = false;
 
     private int _security = 0;
 
-    void Start()
+    private void ResetVariables()
     {
-        try
-        {
-            _structGrid = GetComponent<Grid>().GetStructGrid();
-        }
-        catch
-        {
-            Debug.LogError("GetComponent<Grid>().GetStructGrid() return null");
-        }
+        _pathDictionary.Clear();
+        _positionsToCheck.Clear();
+        _directPath.Clear();
+
+        _didIReachTheDestination = false;
+        _security = 0;
     }
 
-    public void CreatePath(Vector3 origin, Vector3 destination)
+    public override void CreatePath(StructGrid newStructGrid, Vector3 origin, Vector3 destination)
     {
+        SetStructGrid(newStructGrid);
+        ResetVariables();
+
         // Si mon origine et ma destination sont compris dans mon quadrillage
         if (_structGrid.Contains(origin) && _structGrid.Contains(destination))
         {
-            _pathDictionary.Add(origin, Vector3.zero); // Vector3.zero car il ne proviens de nul part
-            _positionsToCheck.Add(origin); 
-            _destination = destination;
+            _pathDictionary.Add(origin, Vector3.zero); // Vector3.zero car il proviens de nul part
+            _positionsToCheck.Add(origin);
 
-            while (_isTherePositionToCheck || _security < 500 && !_didIReachTheDestination)
+            // Tant que j'ai des positions à check
+            do
             {
-                LookAllSides(_positionsToCheck[0]);
+                LookAllSides(_positionsToCheck[0], destination);
                 _positionsToCheck.RemoveAt(0);
 
                 _security++;
+            } while (_isTherePositionToCheck || _security < 500 && !_didIReachTheDestination);
+
+            // Si je n'ai plus de position à check sans avoir atteins ma destination
+            if (!_isTherePositionToCheck && !_didIReachTheDestination)
+            {
+                Debug.Log("Path impossible !");
             }
         }
         else
@@ -56,7 +61,7 @@ public class Dijkstra : MonoBehaviour
         }
     }
 
-    private void LookAllSides(Vector3 position)
+    private void LookAllSides(Vector3 position, Vector3 destination)
     {
         _isTherePositionToCheck = false;
 
@@ -74,7 +79,7 @@ public class Dijkstra : MonoBehaviour
         foreach (KeyValuePair<Vector3, Vector3> KeyValue in sidePositionsAndOrigin)
         {
             // Si j'atteins ma destination
-            if(KeyValue.Key == _destination)
+            if (KeyValue.Key == destination)
             {
                 _pathDictionary.Add(KeyValue.Key, KeyValue.Value);
                 CreateReversePath(KeyValue.Key);
@@ -111,17 +116,17 @@ public class Dijkstra : MonoBehaviour
         }
     }
 
-    public List<Vector3> GetPositionsToCheck()
+    public override List<Vector3> GetPositionsToCheck()
     {
         return _positionsToCheck;
     }
 
-    public Dictionary<Vector3, Vector3> GetWayDictionary()
+    public override List<Node> GetNodeList()
     {
-        return _pathDictionary;
+        return new List<Node>(); // a changer
     }
 
-    public List<Vector3> GetDirectPath()
+    public override List<Vector3> GetDirectPath()
     {
         return _directPath;
     }

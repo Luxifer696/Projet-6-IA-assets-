@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace Complete
 {
@@ -19,6 +20,8 @@ namespace Complete
         private float m_TurnInputValue;             // The current value of the turn input.
         private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
         private ParticleSystem[] m_particleSystems; // References to all the particles systems used by the Tanks
+
+        private Vector3 _previousPosition;
 
         private void Awake ()
         {
@@ -67,6 +70,8 @@ namespace Complete
 
             // Store the original pitch of the audio source.
             m_OriginalPitch = m_MovementAudio.pitch;
+
+            StartCoroutine(MoveTo(new Vector3(11, 1, -4)));
         }
 
 
@@ -136,6 +141,31 @@ namespace Complete
 
             // Apply this rotation to the rigidbody's rotation.
             m_Rigidbody.MoveRotation (m_Rigidbody.rotation * turnRotation);
+        }
+
+        public IEnumerator MoveTo(Vector3 destination)
+        {
+            // Oriente le tank vers sa destination
+            while (Vector3.Angle(transform.forward, destination - transform.position) > 15)
+            {
+                float turn = m_TurnSpeed * Time.deltaTime;
+
+                Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
+
+                m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
+
+                yield return null;
+            }
+
+            // Avance le tank jusqu'à sa destination
+            while (Vector3.Distance(transform.position, destination) > 3)
+            {
+                Vector3 movement = transform.forward * m_Speed * Time.deltaTime;
+
+                m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
+
+                yield return null;
+            }
         }
     }
 }

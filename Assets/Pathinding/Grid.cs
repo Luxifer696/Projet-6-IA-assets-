@@ -23,28 +23,27 @@ public class Grid : MonoBehaviour
     private bool ShowGrid = false;
 
     [SerializeField]
-    private bool ShowDijskraSearch = false;
+    private bool ShowPathindingSearch = true;
 
     [SerializeField]
-    private bool ShowDijskraDirectPath = false;
+    private bool ShowPathindingDirectPath = true;
 
     // Enregistre toute les coordonnées
     private StructGrid _structGrid;
 
     // Pathinding
-    private Dijkstra _dijkstra;
+    [SerializeField]
+    private Pathinding _pathinding;
 
     private void Awake()
     {
         OriginPoint = transform.position;
         _structGrid = new StructGrid(OriginPoint, MaxHorizontalDistance, MaxVerticalDistance);
-
-        _dijkstra = GetComponent<Dijkstra>();
     }
 
     void Start()
     {
-        _dijkstra.CreatePath(OriginPoint + Vector3.up, OriginPoint + Vector3.up + Vector3.right * 3 + Vector3.back * 7);
+        _pathinding.CreatePath(_structGrid, OriginPoint + Vector3.up, OriginPoint + Vector3.up + Vector3.right * 3 + Vector3.back * 7);
         //_structGrid.ShowPointList();
         //_structGrid.IsPointOverlapping(_structGrid.PointList[0]);
     }
@@ -55,9 +54,31 @@ public class Grid : MonoBehaviour
         {
             OriginPoint = transform.position;
             _structGrid = new StructGrid(OriginPoint, MaxHorizontalDistance, MaxVerticalDistance);
+            _pathinding.CreatePath(_structGrid, OriginPoint + Vector3.up, OriginPoint + Vector3.up + Vector3.right * 3 + Vector3.back * 7);
 
             UpdateGridPosition = false;
         }
+    }
+
+    public List<Vector3> GetPath(Vector3 origin, Vector3 destination)
+    {
+        _pathinding.CreatePath(_structGrid, origin, destination);
+        return _pathinding.GetDirectPath();
+    }
+
+    public Vector3 GetClosestGridPoint(Vector3 position)
+    {
+        Vector3 closestPoint = _structGrid.PointList[0];
+
+        foreach (Vector3 point in _structGrid.PointList)
+        {
+            if (Vector3.Distance(position, point) < Vector3.Distance(position, closestPoint))
+            {
+                closestPoint = point;
+            }
+        }
+
+        return closestPoint;
     }
 
     public StructGrid GetStructGrid()
@@ -77,23 +98,32 @@ public class Grid : MonoBehaviour
             Gizmos.color = Color.blue;
             foreach (var point in _structGrid.PointList)
             {
-                Gizmos.DrawSphere(point, 0.1f);
+                Gizmos.DrawSphere(point, 0.05f);
             }
         }
 
-        if (ShowDijskraSearch)
+        /*if (ShowPathindingSearch)
         {
             Gizmos.color = Color.red;
-            foreach (var point in _dijkstra.GetPositionsToCheck())
+            foreach (var point in _pathinding.GetPositionsToCheck())
             {
                 Gizmos.DrawWireCube(point, new Vector3(1, 1, 1));
             }
+        }*/
+
+        if (ShowPathindingSearch)
+        {
+            Gizmos.color = Color.red;
+            foreach (var node in _pathinding.GetNodeList())
+            {
+                Gizmos.DrawWireCube(node.Position, new Vector3(1, 1, 1));
+            }
         }
 
-        if (ShowDijskraDirectPath)
+        if (ShowPathindingDirectPath)
         {
             Gizmos.color = Color.green;
-            foreach (var point in _dijkstra.GetDirectPath())
+            foreach (var point in _pathinding.GetDirectPath())
             {
                 Gizmos.DrawWireCube(point, new Vector3(1, 1, 1));
             }
