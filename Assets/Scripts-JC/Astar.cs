@@ -41,7 +41,7 @@ public class Astar : Pathinding
             CheckNode(originNode);
 
             // Tant que j'ai des positions à check
-            while (_isTherePositionToCheck || _securityInfinityLoop < 500 && !_didIReachTheDestination)
+            while (_isTherePositionToCheck || _securityInfinityLoop < 50000 && !_didIReachTheDestination)
             {
                 Node newNodeToCheck = GetNextNodeToCheck();
 
@@ -130,7 +130,7 @@ public class Astar : Pathinding
                 if (!HasThisNodePosition(node.Position))
                 {
                     // S'il n'y a pas d'objet à cette position OU s'il s'agit du joueur (de son propre corps)
-                    if (!_structGrid.IsPointOverlapping(node.Position) || _structGrid.GetOverlappingObject(node.Position).layer == 9)
+                    if (!_structGrid.IsThisPositionFree(node.Position))
                     {
                         _nodesList.Add(node);
 
@@ -185,7 +185,7 @@ public class Astar : Pathinding
     {
         Node nodeWithLowerHCost = default;
 
-        // On prend la première Node non chech
+        // On prend la première Node non check
         foreach (Node node in _nodesList)
         {
             if (!node.HasBeenChecked)
@@ -231,11 +231,20 @@ public class Astar : Pathinding
             nextNode = GetNodeWithPosition(nextNode.PreviousNodePosition);
             securityInfinityLoop++;
         }
+
+        OrderDirectPath();
     }
 
-    public override List<Vector3> GetPositionsToCheck()
+    private void OrderDirectPath()
     {
-        return default; // a changer
+        List<Vector3> orderedPath = new List<Vector3>();
+
+        foreach(Vector3 position in _directPath)
+        {
+            orderedPath.Insert(0, position);
+        }
+
+        _directPath = orderedPath;
     }
 
     public override List<Node> GetNodeList()

@@ -42,21 +42,14 @@ namespace Complete
 
                     foreach (var tank in TankList)
                     {
-                        Vector3 tankPosition = MyGrid.GetClosestGridPoint(tank.transform.position);
+                        Vector3 tankPositionRelativeToGrid = MyGrid.GetClosestGridPoint(tank.transform.position);
                         
-                        List<Vector3> itinary = MyGrid.GetPath(tankPosition, tankDestination);
+                        List<Vector3> itinary = MyGrid.GetPath(tankPositionRelativeToGrid, tankDestination);
 
-                        StartCoroutine(GiveItinaryToTheTank(tank, itinary));
+                        //IEnumerator I_SetItinaryToTheTank = SetItinaryToTheTank(tank, itinary);
+                        StartCoroutine(tank.GetComponent<TankMovement>().SetItinary(itinary));  
                     }
                 }
-            }
-        }
-
-        private IEnumerator GiveItinaryToTheTank(GameObject tank, List<Vector3> itinary)
-        {
-            foreach(Vector3 position in itinary)
-            {
-                yield return StartCoroutine(tank.GetComponent<TankMovement>().MoveTo(position));
             }
         }
     }

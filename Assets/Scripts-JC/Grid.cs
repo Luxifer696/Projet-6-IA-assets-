@@ -43,7 +43,10 @@ public class Grid : MonoBehaviour
 
     void Start()
     {
-        _pathinding.CreatePath(_structGrid, OriginPoint + Vector3.up, OriginPoint + Vector3.up + Vector3.right * 3 + Vector3.back * 7);
+        //_pathinding.CreatePath(_structGrid, OriginPoint + Vector3.up / 2, OriginPoint + Vector3.up / 2 + Vector3.right * 3 + Vector3.back * 7);
+        //_structGrid.ShowPointList();
+
+        //Debug.Log(_structGrid.BottomLeftBackwardPoint);
         //_structGrid.ShowPointList();
         //_structGrid.IsPointOverlapping(_structGrid.PointList[0]);
     }
@@ -54,7 +57,7 @@ public class Grid : MonoBehaviour
         {
             OriginPoint = transform.position;
             _structGrid = new StructGrid(OriginPoint, MaxHorizontalDistance, MaxVerticalDistance);
-            _pathinding.CreatePath(_structGrid, OriginPoint + Vector3.up, OriginPoint + Vector3.up + Vector3.right * 3 + Vector3.back * 7);
+            //_pathinding.CreatePath(_structGrid, OriginPoint + Vector3.up / 2, OriginPoint + Vector3.up / 2 + Vector3.right * 3 + Vector3.back * 7);
 
             UpdateGridPosition = false;
         }
@@ -74,7 +77,10 @@ public class Grid : MonoBehaviour
         {
             if (Vector3.Distance(position, point) < Vector3.Distance(position, closestPoint))
             {
-                closestPoint = point;
+                if (!_structGrid.IsThisPositionFree(point))
+                {
+                    closestPoint = point;
+                }
             }
         }
 
@@ -101,15 +107,6 @@ public class Grid : MonoBehaviour
                 Gizmos.DrawSphere(point, 0.05f);
             }
         }
-
-        /*if (ShowPathindingSearch)
-        {
-            Gizmos.color = Color.red;
-            foreach (var point in _pathinding.GetPositionsToCheck())
-            {
-                Gizmos.DrawWireCube(point, new Vector3(1, 1, 1));
-            }
-        }*/
 
         if (ShowPathindingSearch)
         {

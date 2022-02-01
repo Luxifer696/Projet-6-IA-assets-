@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Complete
@@ -71,7 +72,12 @@ namespace Complete
             // Store the original pitch of the audio source.
             m_OriginalPitch = m_MovementAudio.pitch;
 
-            StartCoroutine(MoveTo(new Vector3(11, 1, -4)));
+            //StartCoroutine(MoveTo(new Vector3(11, 1, -4)));
+
+
+            //Debug.Log(Vector2.Angle(new Vector2(transform.forward.x, transform.forward.z), new Vector2(11, -4) - new Vector2(transform.position.x, transform.position.z)));
+
+            //Debug.Log(IsMyNextRotationBringMeCloserToTarget(Quaternion.Euler(0, 90, 0), new Vector3(-11, 1, -4)));
         }
 
 
@@ -82,6 +88,9 @@ namespace Complete
             m_TurnInputValue = Input.GetAxis (m_TurnAxisName);
 
             EngineAudio ();
+
+            //Debug.Log(Vector2.Angle(new Vector2(transform.forward.x, transform.forward.z), new Vector2(11, -4) - new Vector2(transform.position.x, transform.position.z)));
+            //Debug.Log(Vector3.Angle(transform.forward, new Vector3(11, 1, -4) - transform.position));
         }
 
 
@@ -145,26 +154,76 @@ namespace Complete
 
         public IEnumerator MoveTo(Vector3 destination)
         {
+            // Conversion des vector en 2D pour ne pas prendre en compte la hauteur dans le calcule de l'angle            
             // Oriente le tank vers sa destination
-            while (Vector3.Angle(transform.forward, destination - transform.position) > 15)
+            while (Vector2.Angle(new Vector2(transform.forward.x, transform.forward.z), new Vector2(destination.x, destination.z) - new Vector2(transform.position.x, transform.position.z)) > 6)
             {
                 float turn = m_TurnSpeed * Time.deltaTime;
-
                 Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
 
+                if(!IsMyNextRotationBringMeCloserToTarget(turnRotation, destination))
+                {
+                    turnRotation = Quaternion.Euler(0f, -turn, 0f);
+                }
+
                 m_Rigidbody.MoveRotation(m_Rigidbody.rotation * turnRotation);
+
+                //Debug.Log(Vector2.Angle(forward2D, destination2D - position2D));
 
                 yield return null;
             }
 
+            // Conversion des vector en 2D
             // Avance le tank jusqu'à sa destination
-            while (Vector3.Distance(transform.position, destination) > 3)
+            while (Vector3.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(destination.x, destination.z)) > 1)
             {
                 Vector3 movement = transform.forward * m_Speed * Time.deltaTime;
 
                 m_Rigidbody.MovePosition(m_Rigidbody.position + movement);
 
                 yield return null;
+            }
+        }
+
+        // Retourne vrais si ma prochaine rotation me rapproche face à ma cible
+        private bool IsMyNextRotationBringMeCloserToTarget(Quaternion nextRotation, Vector3 targetPosition)
+        {
+            // Create a new transform for preview the next rotation
+            GameObject transformContainer = new GameObject();
+            Transform nextStep = transformContainer.transform;
+            nextStep.position = transform.position;
+            nextStep.localEulerAngles = transform.localEulerAngles;
+
+            nextStep.localRotation *= nextRotation;
+
+            //Debug.Log(transform.localRotation.eulerAngles);
+            //Debug.Log(nextStep.localRotation.eulerAngles);
+
+            float actualAngle = Vector2.Angle(new Vector2(transform.forward.x, transform.forward.z), new Vector2(targetPosition.x, targetPosition.z) - new Vector2(transform.position.x, transform.position.z));
+            float futurAngle = Vector2.Angle(new Vector2(nextStep.forward.x, nextStep.forward.z), new Vector2(targetPosition.x, targetPosition.z) - new Vector2(nextStep.position.x, nextStep.position.z));
+            
+            //Debug.Log(actualAngle);
+            //Debug.Log(futurAngle);
+
+            if (futurAngle < actualAngle)
+            {
+                Destroy(transformContainer);
+                return true;
+            }
+
+            Destroy(transformContainer);
+            return false;
+        }
+
+        public IEnumerator SetItinary(List<Vector3> newItinary)
+        {
+            // On enregistre l'itinéraire dans un nouvel espace mémoire pour qu'il ne soit pas modifié
+            List<Vector3> itinary = new List<Vector3>(newItinary);
+
+            foreach (Vector3 position in itinary)
+            {
+                //Debug.Log(position);
+                yield return StartCoroutine(MoveTo(position));
             }
         }
     }

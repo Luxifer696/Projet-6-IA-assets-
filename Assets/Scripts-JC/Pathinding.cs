@@ -14,8 +14,6 @@ public abstract class Pathinding : ScriptableObject
 
     public abstract void CreatePath(StructGrid newStructGrid, Vector3 origin, Vector3 destination);
 
-    public abstract List<Vector3> GetPositionsToCheck();
-
     public abstract List<Node> GetNodeList();
 
     public abstract List<Vector3> GetDirectPath();

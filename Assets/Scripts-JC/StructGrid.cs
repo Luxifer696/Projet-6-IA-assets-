@@ -121,4 +121,10 @@ public struct StructGrid
         // No object detected
         return null;
     }
+
+    // Est considéré comme libre, les positions où l'on peut spawn un petit cube de 1*1*1 sans toucher d'autre objet, exception pour les tanks
+    public bool IsThisPositionFree(Vector3 position)
+    {
+        return !IsPointOverlapping(position) || GetOverlappingObject(position).layer == 9;
+    }
 }
