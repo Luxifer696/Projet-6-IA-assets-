@@ -37,6 +37,7 @@ public class StateMachine : MonoBehaviour
         nbCapBlue = currentState.GetNbPointBlue();
         nbCapRed = currentState.GetNbPointRed();
 
+        // GET A NAME TO DISPLAY DEPENDING ON CURRENT STATE //
         if (currentState.name == "ZoneBaseState")
         {
             zoneCapLabel = "Zone is not captured!";
@@ -44,6 +45,7 @@ public class StateMachine : MonoBehaviour
 
         if (currentState.name == "ZoneCapturedState")
         {
+            // FIX THIS IT DOESNT WORK
             if (nbCapBlue > nbCapRed)
             {
                 zoneCapLabel = "Zone controlled by Blue";
@@ -52,6 +54,11 @@ public class StateMachine : MonoBehaviour
             {
                 zoneCapLabel = "Zone controlled by Red";
             }
+        }
+
+        if (currentState.name == "ZoneContestedState")
+        {
+            zoneCapLabel = "Zone is contested!";
         }
     }
 

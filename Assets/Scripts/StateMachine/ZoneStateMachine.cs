@@ -9,6 +9,9 @@ public class ZoneStateMachine : StateMachine
     public ZoneBaseState zoneBaseState;
     [HideInInspector]
     public ZoneCapturedState zoneCapturedState;
+
+    [HideInInspector]
+    public ZoneContestedState zoneContestedState;
     
     private void OnTriggerEnter(Collider other)
     {
@@ -55,6 +58,7 @@ public class ZoneStateMachine : StateMachine
     {
         zoneBaseState = new ZoneBaseState(this);
         zoneCapturedState = new ZoneCapturedState(this);
+        zoneContestedState = new ZoneContestedState(this);
     }
 
     protected override BaseState GetInitialState()

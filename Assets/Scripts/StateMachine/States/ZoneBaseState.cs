@@ -17,6 +17,7 @@ public class ZoneBaseState : BaseState
     private float ptsLongCooldown = 3f; // cooldown used for slow decrease
     private float currCooldown;
     private bool isCooldown = false;
+    private int maxPtsForCap = 15;
 
     public override void Enter()
     {
@@ -36,11 +37,23 @@ public class ZoneBaseState : BaseState
     private void IncreasePtsCapBlue()
     {
         ptsCaptureBlue += nbBlueTankIn;
+        
+        //make sure we dont go above points for cap
+        if (ptsCaptureBlue > maxPtsForCap)
+        {
+            ptsCaptureBlue = maxPtsForCap;
+        }
     }
     
     private void IncreasePtsCapRed()
     {
         ptsCaptureRed += nbRedTankIn;
+        
+        //make sure we dont go above points for cap
+        if (ptsCaptureRed > maxPtsForCap)
+        {
+            ptsCaptureRed = maxPtsForCap;
+        }
     }
 
     private void DecreasePtsCapBlue()
@@ -91,6 +104,23 @@ public class ZoneBaseState : BaseState
             
         }
 
+        // TRANSITION TO CAPTURED STATE IF A TEAM REACHED MAX PTS //
+        //transi to zone captured if points > 100
+        if (ptsCaptureBlue == maxPtsForCap)
+        {
+            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneCapturedState);
+        }
+
+        if (ptsCaptureRed == maxPtsForCap)
+        {
+            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneCapturedState);
+        }
+        
+        // TRANSITION TO CONTESTED STATE IF BOTH TEAM ARE IN THE ZONE //
+        if (nbBlueTankIn != 0 && nbRedTankIn != 0)
+        {
+            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneContestedState);
+        }
         
         // BLUE TANKS ARE CAPTURING THE ZONE //
         if (nbBlueTankIn > 0 && nbRedTankIn == 0)
@@ -102,7 +132,6 @@ public class ZoneBaseState : BaseState
                     //increasing cap points and activating cooldown
                     IncreasePtsCapBlue();
                     isCooldown = true;
-                    Debug.Log("pts blue : " + ptsCaptureBlue);
                 } 
                 else
                 {
@@ -115,7 +144,6 @@ public class ZoneBaseState : BaseState
                 {
                     DecreasePtsCapRed();
                     isCooldown = true;
-                    Debug.Log("pts red : " + ptsCaptureRed);
                 }
                 else
                 {
@@ -163,7 +191,6 @@ public class ZoneBaseState : BaseState
                 {
                     DecreasePtsCapRed();
                     isCooldown = true;
-                    Debug.Log("pts red slowly dec");
                 }
                 else
                 {
@@ -177,7 +204,6 @@ public class ZoneBaseState : BaseState
                 {
                     DecreasePtsCapBlue();
                     isCooldown = true;
-                    Debug.Log("pts blue slowly dec");
                 }
                 else
                 {
