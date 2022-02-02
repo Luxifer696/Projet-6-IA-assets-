@@ -46,6 +46,8 @@ public class Grid : MonoBehaviour
         //_pathinding.CreatePath(_structGrid, OriginPoint + Vector3.up / 2, OriginPoint + Vector3.up / 2 + Vector3.right * 3 + Vector3.back * 7);
         //_structGrid.ShowPointList();
 
+        //Debug.Log(_structGrid.IsPointOverlapping(new Vector3(-11, 1, -9)));
+
         //Debug.Log(_structGrid.BottomLeftBackwardPoint);
         //_structGrid.ShowPointList();
         //_structGrid.IsPointOverlapping(_structGrid.PointList[0]);

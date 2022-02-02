@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Complete
 {
@@ -12,6 +13,8 @@ namespace Complete
         public List<GameObject> TankList = new List<GameObject>();
 
         public Grid MyGrid;
+
+        public bool UseNaveMesh = false;
 
         void Update()
         {
@@ -38,16 +41,32 @@ namespace Complete
                 RaycastHit hit;
                 if (Physics.Raycast(castPoint, out hit, Mathf.Infinity))
                 {
-                    Vector3 tankDestination = MyGrid.GetClosestGridPoint(hit.point);
-
-                    foreach (var tank in TankList)
+                    // Avec le système GRID
+                    if (!UseNaveMesh)
                     {
-                        Vector3 tankPositionRelativeToGrid = MyGrid.GetClosestGridPoint(tank.transform.position);
-                        
-                        List<Vector3> itinary = MyGrid.GetPath(tankPositionRelativeToGrid, tankDestination);
+                        Vector3 tankDestination = MyGrid.GetClosestGridPoint(hit.point);
 
-                        //IEnumerator I_SetItinaryToTheTank = SetItinaryToTheTank(tank, itinary);
-                        StartCoroutine(tank.GetComponent<TankMovement>().SetItinary(itinary));  
+                        foreach (var tank in TankList)
+                        {
+                            Vector3 tankPositionRelativeToGrid = MyGrid.GetClosestGridPoint(tank.transform.position);
+
+                            List<Vector3> itinary = MyGrid.GetPath(tankPositionRelativeToGrid, tankDestination);
+
+                            StartCoroutine(tank.GetComponent<TankMovement>().SetItinary(itinary));
+                        }
+                    }
+                    // Avec le système NavMesh
+                    else
+                    {
+                        foreach (var tank in TankList)
+                        {
+                            NavMeshAgent agent = tank.GetComponent<NavMeshAgent>();
+
+                            if(agent)
+                            {
+                                agent.SetDestination(hit.point);
+                            }
+                        }
                     }
                 }
             }

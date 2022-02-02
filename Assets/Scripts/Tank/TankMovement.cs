@@ -175,7 +175,8 @@ namespace Complete
 
             // Conversion des vector en 2D
             // Avance le tank jusqu'à sa destination
-            while (Vector3.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(destination.x, destination.z)) > 1)
+            while (Vector3.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(destination.x, destination.z)) > 1 &&
+                IsMyNextPositionBringMeCloserToTarget(transform.position + transform.forward * m_Speed * Time.deltaTime, destination))
             {
                 Vector3 movement = transform.forward * m_Speed * Time.deltaTime;
 
@@ -215,6 +216,25 @@ namespace Complete
             return false;
         }
 
+        private bool IsMyNextPositionBringMeCloserToTarget(Vector3 nextPosition, Vector3 targetPosition)
+        {
+            GameObject transformContainer = new GameObject();
+            Transform nextStep = transformContainer.transform;
+            nextStep.position = nextPosition;
+
+            float actualPosition = Vector3.Distance(new Vector2(transform.position.x, transform.position.z), new Vector2(targetPosition.x, targetPosition.z));
+            float futurPosition = Vector3.Distance(new Vector2(nextStep.position.x, nextStep.position.z), new Vector2(targetPosition.x, targetPosition.z));
+
+            if (futurPosition < actualPosition)
+            {
+                Destroy(transformContainer);
+                return true;
+            }
+
+            Destroy(transformContainer);
+            return false;
+        }
+
         public IEnumerator SetItinary(List<Vector3> newItinary)
         {
             // On enregistre l'itinéraire dans un nouvel espace mémoire pour qu'il ne soit pas modifié
@@ -222,7 +242,6 @@ namespace Complete
 
             foreach (Vector3 position in itinary)
             {
-                //Debug.Log(position);
                 yield return StartCoroutine(MoveTo(position));
             }
         }
