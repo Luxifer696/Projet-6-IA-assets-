@@ -22,6 +22,11 @@ public class ZoneBaseState : BaseState
         base.Enter();
     }
 
+    public override int GetNbPointBlue()
+    {
+        return ptsCaptureBlue;
+    }
+
     private void IncreasePtsCapBlue()
     {
         ptsCaptureBlue += nbBlueTankIn;

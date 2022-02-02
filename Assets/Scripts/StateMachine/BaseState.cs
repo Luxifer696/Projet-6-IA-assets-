@@ -12,6 +12,12 @@ public class BaseState
         this.name = name;
         this.stateMachine = stateMachine;
     }
+
+    public virtual int GetNbPointBlue()
+    {
+        return 0;
+        
+    }
     
     public virtual void Enter() { }
 

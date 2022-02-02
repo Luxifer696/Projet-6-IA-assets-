@@ -5,6 +5,8 @@ using UnityEngine;
 public class StateMachine : MonoBehaviour
 {
     BaseState currentState;
+
+    private int nbCapBlue;
     
     void Start()
     {
@@ -29,6 +31,8 @@ public class StateMachine : MonoBehaviour
         {
             currentState.UpdatePhysics();
         }
+
+        nbCapBlue = currentState.GetNbPointBlue();
     }
 
     public void ChangeState(BaseState newState)
@@ -47,5 +51,6 @@ public class StateMachine : MonoBehaviour
     {
         string content = currentState != null ? currentState.name : "(no current state)";
         GUILayout.Label($"<color='black'><size=40>{content}</size></color>");
+        GUILayout.Label($"<color='blue'><size=40>{nbCapBlue}</size></color>");
     }
 }
