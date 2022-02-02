@@ -77,7 +77,7 @@ public class Grid : MonoBehaviour
         {
             if (Vector3.Distance(position, point) < Vector3.Distance(position, closestPoint))
             {
-                if (!_structGrid.IsThisPositionFree(point))
+                if (_structGrid.IsThisPositionFree(point))
                 {
                     closestPoint = point;
                 }

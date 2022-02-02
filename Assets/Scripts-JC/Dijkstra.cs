@@ -105,7 +105,7 @@ public class Dijkstra : Pathinding
             if (_structGrid.Contains(node.Position) && !HasThisNodePosition(node.Position) && !_didIReachTheDestination)
             {
                 // S'il n'y a pas d'object à cette position OU s'il s'agit du joueur (de son propre corps)
-                if (!_structGrid.IsThisPositionFree(node.Position))
+                if (_structGrid.IsThisPositionFree(node.Position))
                 {
                     _nodesList.Add(node);
 

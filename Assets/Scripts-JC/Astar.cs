@@ -130,7 +130,7 @@ public class Astar : Pathinding
                 if (!HasThisNodePosition(node.Position))
                 {
                     // S'il n'y a pas d'objet à cette position OU s'il s'agit du joueur (de son propre corps)
-                    if (!_structGrid.IsThisPositionFree(node.Position))
+                    if (_structGrid.IsThisPositionFree(node.Position))
                     {
                         _nodesList.Add(node);
 
