@@ -19,6 +19,12 @@ public class BaseState
         
     }
     
+    public virtual int GetNbPointRed()
+    {
+        return 0;
+        
+    }
+    
     public virtual void Enter() { }
 
     public virtual void Exit() { }

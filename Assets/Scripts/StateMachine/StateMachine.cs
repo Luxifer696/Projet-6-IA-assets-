@@ -6,7 +6,9 @@ public class StateMachine : MonoBehaviour
 {
     BaseState currentState;
 
-    private int nbCapBlue;
+    private int nbCapBlue; 
+    private int nbCapRed;
+    private string zoneCapLabel;
     
     void Start()
     {
@@ -33,6 +35,24 @@ public class StateMachine : MonoBehaviour
         }
 
         nbCapBlue = currentState.GetNbPointBlue();
+        nbCapRed = currentState.GetNbPointRed();
+
+        if (currentState.name == "ZoneBaseState")
+        {
+            zoneCapLabel = "Zone is not captured!";
+        }
+
+        if (currentState.name == "ZoneCapturedState")
+        {
+            if (nbCapBlue > nbCapRed)
+            {
+                zoneCapLabel = "Zone controlled by Blue";
+            }
+            else
+            {
+                zoneCapLabel = "Zone controlled by Red";
+            }
+        }
     }
 
     public void ChangeState(BaseState newState)
@@ -49,8 +69,8 @@ public class StateMachine : MonoBehaviour
 
     private void OnGUI()
     {
-        string content = currentState != null ? currentState.name : "(no current state)";
-        GUILayout.Label($"<color='black'><size=40>{content}</size></color>");
+        GUILayout.Label($"<color='black'><size=40>{zoneCapLabel}</size></color>");
         GUILayout.Label($"<color='blue'><size=40>{nbCapBlue}</size></color>");
+        GUILayout.Label($"<color='red'><size=40>{nbCapRed}</size></color>");
     }
 }
