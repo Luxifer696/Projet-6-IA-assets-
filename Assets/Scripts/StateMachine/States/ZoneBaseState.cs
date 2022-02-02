@@ -1,33 +1,125 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+
 
 public class ZoneBaseState : BaseState
 {
-    private int _blueTeamCapturePts;
 
     public ZoneBaseState(ZoneStateMachine stateMachine) : base("ZoneBaseState", stateMachine){}
+    
+    public int nbBlueTankIn = 0;
+    public int nbRedTankIn = 0;
+    public int ptsCaptureBlue = 0;
+    public int ptsCaptureRed = 0;
+    private float ptsCooldown = 1f;
+    private float currCooldown;
+    private bool isCooldown = false;
 
     public override void Enter()
     {
         base.Enter();
-        _blueTeamCapturePts = 0;
     }
 
+    private void IncreasePtsCapBlue()
+    {
+        ptsCaptureBlue += nbBlueTankIn;
+    }
+    
+    private void IncreasePtsCapRed()
+    {
+        ptsCaptureRed += nbRedTankIn;
+    }
+
+    private void DecreasePtsCapBlue()
+    {
+        ptsCaptureBlue -= nbRedTankIn;
+    }
+
+    private void DecreasePtsCapRed()
+    {
+        ptsCaptureRed -= nbBlueTankIn;
+    }
+
+    private void CooldownTick()
+    {
+        currCooldown += Time.deltaTime;
+        if (currCooldown >= ptsCooldown)
+        {
+            isCooldown = false;
+            currCooldown = 0f;
+        }
+    }
+    
     public override void UpdateLogic()
     {
+        
         if (Input.GetKey(KeyCode.A))
         {
-            _blueTeamCapturePts++;
+            
         }
-        if (Input.GetKey(KeyCode.Z))
+
+        if (nbBlueTankIn > 0 && nbRedTankIn == 0)
         {
-            _blueTeamCapturePts--;
+            if (ptsCaptureRed == 0)
+            {
+                if (!isCooldown)
+                {
+                    //increasing cap points and activating cooldown
+                    IncreasePtsCapBlue();
+                    isCooldown = true;
+                    Debug.Log("pts blue : " + ptsCaptureBlue);
+                } 
+                else
+                {
+                    CooldownTick();
+                }
+            }
+            else
+            {
+                if (!isCooldown)
+                {
+                    DecreasePtsCapRed();
+                    isCooldown = true;
+                    Debug.Log("pts red : " + ptsCaptureRed);
+                }
+                else
+                {
+                    CooldownTick();
+                }
+            }
         }
-        //transi to zone captured if points > 100
-        if (_blueTeamCapturePts >= 100)
+        
+        if (nbRedTankIn > 0 && nbBlueTankIn == 0)
         {
-            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneCapturedState);
+            if (ptsCaptureBlue == 0)
+            {
+                if (!isCooldown)
+                {
+                    //increasing cap points and activating cooldown
+                    IncreasePtsCapRed();
+                    isCooldown = true;
+                    Debug.Log("pts red : " + ptsCaptureRed);
+                } 
+                else
+                {
+                    CooldownTick();
+                }
+            }
+            else
+            {
+                if (!isCooldown)
+                {
+                    DecreasePtsCapBlue();
+                    isCooldown = true;
+                    Debug.Log("pts blue : " + ptsCaptureBlue);
+                }
+                else
+                {
+                    CooldownTick();
+                }
+            }
         }
     }
 }

@@ -9,6 +9,47 @@ public class ZoneStateMachine : StateMachine
     public ZoneBaseState zoneBaseState;
     [HideInInspector]
     public ZoneCapturedState zoneCapturedState;
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "red")
+        {
+            zoneBaseState.nbRedTankIn++;
+            if (zoneBaseState.nbBlueTankIn == 0)
+            {
+                Debug.Log("red capturing!");
+            }
+        }
+        if (other.tag == "blue")
+        {
+            zoneBaseState.nbBlueTankIn++;
+            if (zoneBaseState.nbRedTankIn == 0)
+            {
+                Debug.Log("blue capturing!");
+            }
+        }
+        else
+        {
+            
+        }
+    }
+    
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "red")
+        {
+            zoneBaseState.nbRedTankIn--;
+        }
+        if (other.tag == "blue")
+        {
+            zoneBaseState.nbBlueTankIn--;
+        }
+        else
+        {
+
+        }
+    }
+
 
     private void Awake()
     {
