@@ -65,10 +65,19 @@ public class Grid : MonoBehaviour
         }
     }
 
-    public List<Vector3> GetPath(Vector3 origin, Vector3 destination)
+    public void CreatePath(Vector3 origin, Vector3 destination)
     {
         _pathinding.CreatePath(_structGrid, origin, destination);
+    }
+
+    public List<Vector3> GetPath()
+    {
         return _pathinding.GetDirectPath();
+    }
+
+    private void ThreadFunc()
+    {
+
     }
 
     public Vector3 GetClosestGridPoint(Vector3 position)
