@@ -57,7 +57,7 @@ namespace Complete
                             Vector3 tankPositionRelativeToGrid = MyNavigation.GetClosestGridPoint(tank.transform.position);
 
                             // UnityException: get_defaultPhysicsScene can only be called from the main thread.
-                            // Impossible donc d'utilise un thread pour construire mon path
+                            // Difficile donc d'utilise un thread pour construire mon path, le mieux serait d'utiliser une coroutine plutôt ?
                             /*Action act = () => MyGrid.CreatePath(tankPositionRelativeToGrid, tankDestination);
                             thread = new Thread(new ThreadStart(act));
                             thread.Start();
