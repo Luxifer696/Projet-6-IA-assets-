@@ -9,8 +9,6 @@ public class ZoneBaseState : BaseState
 
     public ZoneBaseState(ZoneStateMachine stateMachine) : base("ZoneBaseState", stateMachine){}
     
-    public int nbBlueTankIn = 0;
-    public int nbRedTankIn = 0;
     private float ptsCooldown = 1f;
     private float ptsLongCooldown = 3f; // cooldown used for slow decrease
     private float currCooldown;
@@ -106,18 +104,18 @@ public class ZoneBaseState : BaseState
         //transi to zone captured if points > 100
         if (ptsCaptureBlue == maxPtsForCap)
         {
-            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneCapturedState, ptsCaptureBlue, ptsCaptureRed);
+            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneCapturedState, ptsCaptureBlue, ptsCaptureRed, nbBlueTankIn, nbRedTankIn);
         }
 
         if (ptsCaptureRed == maxPtsForCap)
         {
-            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneCapturedState, ptsCaptureBlue, ptsCaptureRed);
+            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneCapturedState, ptsCaptureBlue, ptsCaptureRed, nbBlueTankIn, nbRedTankIn);
         }
         
         // TRANSITION TO CONTESTED STATE IF BOTH TEAM ARE IN THE ZONE //
         if (nbBlueTankIn != 0 && nbRedTankIn != 0)
         {
-            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneContestedState, ptsCaptureBlue, ptsCaptureRed);
+            stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneContestedState, ptsCaptureBlue, ptsCaptureRed, nbBlueTankIn, nbRedTankIn);
         }
         
         // BLUE TANKS ARE CAPTURING THE ZONE //

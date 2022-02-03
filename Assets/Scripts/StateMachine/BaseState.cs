@@ -30,7 +30,10 @@ public class BaseState
     public virtual void Enter() { }
 
     //overloading enter to pass arguments
-    public virtual void Enter(int ptsCaptureBlue, int ptsCaptureRed) { }
+    //used for captured state
+    public virtual void Enter(int ptsCaptureBlue, int ptsCaptureRed, int nbTankBlueIn, int nbTankRedIn) { }
+    //used for contested state ?
+    //public virtual void Enter(int ptsCaptureBlue, int ptsCaptureRed) { }
     
     public virtual void Exit() { }
 

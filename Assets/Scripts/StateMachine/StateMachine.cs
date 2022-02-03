@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour
 {
-    BaseState currentState;
-
-    private int nbCapBlue; 
-    private int nbCapRed;
+    public BaseState currentState;
     private string zoneCapLabel;
     
     void Start()
@@ -59,11 +56,11 @@ public class StateMachine : MonoBehaviour
         }
     }
 
-    public void ChangeState(BaseState newState, int ptsCaptureBlue, int ptsCaptureRed)
+    public void ChangeState(BaseState newState, int ptsCaptureBlue, int ptsCaptureRed, int nbTankBlueIn, int nbTankRedIn)
     {
         currentState.Exit();
         currentState = newState;
-        currentState.Enter(ptsCaptureBlue, ptsCaptureRed);
+        currentState.Enter(ptsCaptureBlue, ptsCaptureRed, nbTankBlueIn, nbTankRedIn);
     }
 
     protected virtual BaseState GetInitialState()
