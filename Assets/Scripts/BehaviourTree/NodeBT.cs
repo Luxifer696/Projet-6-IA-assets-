@@ -14,7 +14,8 @@ public abstract class NodeBT : ScriptableObject
 
     public State state = State.RUNNING;
     public bool started = false;
-    public string guid; 
+    public string guid;
+    public Blackboard blackboard;
 
     public State Update()
     {

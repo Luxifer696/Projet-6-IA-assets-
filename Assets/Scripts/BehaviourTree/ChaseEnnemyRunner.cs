@@ -1,0 +1,61 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ChaseEnnemyRunner : MonoBehaviour
+{
+
+    BehaviourTree tree;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+
+        // A lire de bas en haut pour l'odre des Nodes 
+
+        //Instanciation du BehaviourTree
+        tree = ScriptableObject.CreateInstance<BehaviourTree>();
+
+    
+
+        //On cherche l'ennemi le plus proche, on tire et on attend 1 seconde tant qu'on a un ennemi dans la range de tirs
+        var FaceClosestEnemy = ScriptableObject.CreateInstance<FaceClosestEnemy>();
+        var shoot = ScriptableObject.CreateInstance<ShootNode>();
+        var WaitEnemy = ScriptableObject.CreateInstance<WaitNode>();
+        WaitEnemy.duration = 1f;
+
+        var AttackEnemy = ScriptableObject.CreateInstance<SequencerNode>();
+        AttackEnemy.children.Add(FaceClosestEnemy);
+        AttackEnemy.children.Add(shoot);
+        AttackEnemy.children.Add(WaitEnemy);
+
+        var EnemyInRange = ScriptableObject.CreateInstance<EnemyInRangeNode>();
+        EnemyInRange.child = AttackEnemy;
+
+        //Si On a un ennmi dans la range de tir on active la sequence de tir, sinon on patrouille autour de la zone tout en restant de dedans
+        var ControlZone = ScriptableObject.CreateInstance<SelectorNode>();
+        ControlZone.children.Add(EnemyInRange);
+
+
+
+        //Décorator qui nous dit si on est dans la zone ou non 
+        var IsInZone = ScriptableObject.CreateInstance<isInZoneNode>();
+        IsInZone.child = ControlZone;
+
+        //Node Selector qui va décider entre aller dans la zone ou si on y est
+        var AIState = ScriptableObject.CreateInstance<SelectorNode>();
+        AIState.children.Add(IsInZone);
+        //AIState.children.Add();
+
+        //Node Root 
+        var root = ScriptableObject.CreateInstance<RootNode>();
+        root.child = AIState;
+        tree.rootNode = root;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        tree.Update();
+    }
+}

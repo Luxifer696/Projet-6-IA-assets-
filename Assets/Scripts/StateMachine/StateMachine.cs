@@ -4,10 +4,7 @@ using UnityEngine;
 
 public class StateMachine : MonoBehaviour
 {
-    BaseState currentState;
-
-    private int nbCapBlue; 
-    private int nbCapRed;
+    public BaseState currentState;
     private string zoneCapLabel;
     
     void Start()
@@ -29,14 +26,6 @@ public class StateMachine : MonoBehaviour
     
     void LateUpdate()
     {
-        if (currentState != null)
-        {
-            currentState.UpdatePhysics();
-        }
-
-        nbCapBlue = currentState.GetNbPointBlue();
-        nbCapRed = currentState.GetNbPointRed();
-
         // GET A NAME TO DISPLAY DEPENDING ON CURRENT STATE //
         if (currentState.name == "ZoneBaseState")
         {
@@ -46,7 +35,7 @@ public class StateMachine : MonoBehaviour
         if (currentState.name == "ZoneCapturedState")
         {
             // FIX THIS IT DOESNT WORK
-            if (nbCapBlue > nbCapRed)
+            if (currentState.ptsCaptureBlue > currentState.ptsCaptureRed)
             {
                 zoneCapLabel = "Zone controlled by Blue";
             }
@@ -62,11 +51,11 @@ public class StateMachine : MonoBehaviour
         }
     }
 
-    public void ChangeState(BaseState newState)
+    public void ChangeState(BaseState newState, int ptsCaptureBlue, int ptsCaptureRed, int nbTankBlueIn, int nbTankRedIn)
     {
         currentState.Exit();
         currentState = newState;
-        currentState.Enter();
+        currentState.Enter(ptsCaptureBlue, ptsCaptureRed, nbTankBlueIn, nbTankRedIn);
     }
 
     protected virtual BaseState GetInitialState()
@@ -77,7 +66,7 @@ public class StateMachine : MonoBehaviour
     private void OnGUI()
     {
         GUILayout.Label($"<color='black'><size=40>{zoneCapLabel}</size></color>");
-        GUILayout.Label($"<color='blue'><size=40>{nbCapBlue}</size></color>");
-        GUILayout.Label($"<color='red'><size=40>{nbCapRed}</size></color>");
+        GUILayout.Label($"<color='blue'><size=40>{currentState.ptsCaptureBlue}</size></color>");
+        GUILayout.Label($"<color='red'><size=40>{currentState.ptsCaptureRed}</size></color>");
     }
 }

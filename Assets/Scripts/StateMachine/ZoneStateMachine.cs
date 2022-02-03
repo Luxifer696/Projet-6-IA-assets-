@@ -17,16 +17,16 @@ public class ZoneStateMachine : StateMachine
     {
         if (other.tag == "red")
         {
-            zoneBaseState.nbRedTankIn++;
-            if (zoneBaseState.nbBlueTankIn == 0)
+            currentState.nbRedTankIn++;
+            if (currentState.nbBlueTankIn == 0)
             {
                 Debug.Log("red capturing!");
             }
         }
         if (other.tag == "blue")
         {
-            zoneBaseState.nbBlueTankIn++;
-            if (zoneBaseState.nbRedTankIn == 0)
+            currentState.nbBlueTankIn++;
+            if (currentState.nbRedTankIn == 0)
             {
                 Debug.Log("blue capturing!");
             }
@@ -41,11 +41,11 @@ public class ZoneStateMachine : StateMachine
     {
         if (other.tag == "red")
         {
-            zoneBaseState.nbRedTankIn--;
+            currentState.nbRedTankIn--;
         }
         if (other.tag == "blue")
         {
-            zoneBaseState.nbBlueTankIn--;
+            currentState.nbBlueTankIn--;
         }
         else
         {
@@ -61,6 +61,7 @@ public class ZoneStateMachine : StateMachine
         zoneContestedState = new ZoneContestedState(this);
     }
 
+    //this is the part that gives zoneBaseState as first state !!
     protected override BaseState GetInitialState()
     {
         return zoneBaseState;
