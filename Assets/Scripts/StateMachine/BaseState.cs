@@ -8,6 +8,8 @@ public class BaseState
     protected StateMachine stateMachine;
     public int nbBlueTankIn;
     public int nbRedTankIn;
+    public int ptsCaptureBlue;
+    public int ptsCaptureRed;
 
     public BaseState(string name, StateMachine stateMachine)
     {
@@ -26,6 +28,9 @@ public class BaseState
     }
     
     public virtual void Enter() { }
+
+    //overloading enter to pass arguments
+    public virtual void Enter(int ptsCaptureBlue, int ptsCaptureRed) { }
     
     public virtual void Exit() { }
 
