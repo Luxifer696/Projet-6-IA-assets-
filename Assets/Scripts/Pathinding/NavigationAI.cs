@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Grid : MonoBehaviour
+public class NavigationAI : MonoBehaviour
 {
     // Update la position de la grille si l'on décide de la bouger en jeu
     [SerializeField]

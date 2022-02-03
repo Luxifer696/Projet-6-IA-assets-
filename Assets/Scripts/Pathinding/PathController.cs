@@ -14,7 +14,7 @@ namespace Complete
 
         public List<GameObject> TankList = new List<GameObject>();
 
-        public Grid MyGrid;
+        public NavigationAI MyNavigation;
 
         public bool UseNaveMesh = false;
 
@@ -50,11 +50,11 @@ namespace Complete
                     // Avec le système GRID
                     if (!UseNaveMesh)
                     {
-                        Vector3 tankDestination = MyGrid.GetClosestGridPoint(hit.point);
+                        Vector3 tankDestination = MyNavigation.GetClosestGridPoint(hit.point);
 
                         foreach (var tank in TankList)
                         {
-                            Vector3 tankPositionRelativeToGrid = MyGrid.GetClosestGridPoint(tank.transform.position);
+                            Vector3 tankPositionRelativeToGrid = MyNavigation.GetClosestGridPoint(tank.transform.position);
 
                             // UnityException: get_defaultPhysicsScene can only be called from the main thread.
                             // Impossible donc d'utilise un thread pour construire mon path
@@ -64,8 +64,8 @@ namespace Complete
 
                             StartCoroutine(WaitThread(tank));*/
 
-                            MyGrid.CreatePath(tankPositionRelativeToGrid, tankDestination);
-                            List<Vector3> itinary = MyGrid.GetPath();
+                            MyNavigation.CreatePath(tankPositionRelativeToGrid, tankDestination);
+                            List<Vector3> itinary = MyNavigation.GetPath();
 
                             StartCoroutine(tank.GetComponent<TankMovement>().SetItinary(itinary));
                         }
@@ -94,7 +94,7 @@ namespace Complete
                 yield return null;
             }
 
-            List<Vector3> itinary = MyGrid.GetPath();
+            List<Vector3> itinary = MyNavigation.GetPath();
 
             StartCoroutine(tank.GetComponent<TankMovement>().SetItinary(itinary));
         }
