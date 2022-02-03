@@ -2,10 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using System.Threading;
+using System;
 
 namespace Complete
 {
-    public class GodController : MonoBehaviour
+    public class PathController : MonoBehaviour
     {
         public Camera MainCamera;
         float m_CameraSpeed = 12f;
@@ -16,8 +18,11 @@ namespace Complete
 
         public bool UseNaveMesh = false;
 
+        private Thread thread;
+
         void Update()
         {
+            #region cameraController
             if (Input.GetKey(KeyCode.UpArrow))
             {
                 MainCamera.transform.position += MainCamera.transform.up * m_CameraSpeed * Time.deltaTime;
@@ -34,6 +39,7 @@ namespace Complete
             {
                 MainCamera.transform.position += -MainCamera.transform.right * m_CameraSpeed * Time.deltaTime;
             }
+            #endregion
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -50,7 +56,16 @@ namespace Complete
                         {
                             Vector3 tankPositionRelativeToGrid = MyGrid.GetClosestGridPoint(tank.transform.position);
 
-                            List<Vector3> itinary = MyGrid.GetPath(tankPositionRelativeToGrid, tankDestination);
+                            // UnityException: get_defaultPhysicsScene can only be called from the main thread.
+                            // Impossible donc d'utilise un thread pour construire mon path
+                            /*Action act = () => MyGrid.CreatePath(tankPositionRelativeToGrid, tankDestination);
+                            thread = new Thread(new ThreadStart(act));
+                            thread.Start();
+
+                            StartCoroutine(WaitThread(tank));*/
+
+                            MyGrid.CreatePath(tankPositionRelativeToGrid, tankDestination);
+                            List<Vector3> itinary = MyGrid.GetPath();
 
                             StartCoroutine(tank.GetComponent<TankMovement>().SetItinary(itinary));
                         }
@@ -70,6 +85,18 @@ namespace Complete
                     }
                 }
             }
+        }
+
+        private IEnumerator WaitThread(GameObject tank)
+        {
+            while (thread.IsAlive)
+            {
+                yield return null;
+            }
+
+            List<Vector3> itinary = MyGrid.GetPath();
+
+            StartCoroutine(tank.GetComponent<TankMovement>().SetItinary(itinary));
         }
     }
 }

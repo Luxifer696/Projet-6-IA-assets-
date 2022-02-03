@@ -65,7 +65,7 @@ public class Astar : Pathinding
         }
     }
 
-    private void LookAllSides(Vector3 position, Vector3 origin, Vector3 destination)
+    protected override void LookAllSides(Vector3 position, Vector3 origin, Vector3 destination)
     {
         _isTherePositionToCheck = false;
 
