@@ -7,10 +7,6 @@ public class ZoneCapturedState : BaseState
     private string zoneController;
     public ZoneCapturedState(ZoneStateMachine stateMachine) : base("ZoneCapturedState", stateMachine){}
 
-    private float ptsLongCooldown = 3f; // cooldown used for slow decrease
-    private float currCooldown;
-    private bool isCooldown = false;
-
     //entering with capture points to see who's got control of the zone
     public override void Enter(int ptsCaptureBluePassed, int ptsCaptureRedPassed, int nbBlueTankIn, int nbRedTankin)
     {
@@ -35,6 +31,13 @@ public class ZoneCapturedState : BaseState
 
     public override void UpdateLogic()
     {
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            Debug.Log(currCooldown);
+            Debug.Log(isCooldown);
+        }
+
         /////// TRANSITIONS ///////
         ///
         // IF THE TEAM CONTROLLING LOSES CONTROL //
@@ -83,6 +86,36 @@ public class ZoneCapturedState : BaseState
                 else
                 {
                    // CooldownTick();
+                }
+            }
+        }
+
+        // SLOWLY DECREASE POINTS WHEN NO TANK IS IN THE ZONE  //
+        if (nbRedTankIn == 0 && nbBlueTankIn == 0)
+        {
+            if (ptsCaptureRed > 0)
+            {
+                if (!isCooldown)
+                {
+                    DecreasePtsCapRed();
+                    isCooldown = true;
+                }
+                else
+                {
+                    LongCooldownTick();
+                }
+            }
+
+            if (ptsCaptureBlue > 0)
+            {
+                if (!isCooldown)
+                {
+                    DecreasePtsCapBlue();
+                    isCooldown = true;
+                }
+                else
+                {
+                    LongCooldownTick();
                 }
             }
         }

@@ -13,7 +13,7 @@ public class BaseState
     public static int maxPtsForCap = 15;
     public float ptsCooldown = 1f;
     public float ptsLongCooldown = 3f; // cooldown used for slow decrease
-    public float currCooldown;
+    public float currCooldown = 0f;
     public bool isCooldown = false;
 
     public BaseState(string name, StateMachine stateMachine)
