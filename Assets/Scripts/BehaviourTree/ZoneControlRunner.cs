@@ -62,9 +62,11 @@ public class ZoneControlRunner : MonoBehaviour
         AIState.children.Add(IsInZone); 
         AIState.children.Add(GoToZone);
 
+        var RepeatTree = ScriptableObject.CreateInstance<RepeatNode>(); 
+        RepeatTree.child = AIState; 
         //Node Root 
         var root = ScriptableObject.CreateInstance<RootNode>();
-        root.child = AIState; 
+        root.child = RepeatTree; 
         tree.rootNode = root;
     }
 
