@@ -5,8 +5,11 @@ using UnityEngine;
 public class ZoneCapturedState : BaseState
 {
     private string zoneController;
-    private bool boole = false;
     public ZoneCapturedState(ZoneStateMachine stateMachine) : base("ZoneCapturedState", stateMachine){}
+
+    private float ptsLongCooldown = 3f; // cooldown used for slow decrease
+    private float currCooldown;
+    private bool isCooldown = false;
 
     //entering with capture points to see who's got control of the zone
     public override void Enter(int ptsCaptureBluePassed, int ptsCaptureRedPassed, int nbBlueTankIn, int nbRedTankin)
@@ -32,7 +35,9 @@ public class ZoneCapturedState : BaseState
 
     public override void UpdateLogic()
     {
-        //CONTROLLER POINT == 0 ==> TRANSI BACK TO NO CONTROL STATE //
+        /////// TRANSITIONS ///////
+        ///
+        // IF THE TEAM CONTROLLING LOSES CONTROL //
         if (ptsCaptureBlue <= 0 && zoneController == "blue")
         {
             ptsCaptureBlue = 0;
@@ -43,11 +48,43 @@ public class ZoneCapturedState : BaseState
             ptsCaptureRed = 0;
             stateMachine.ChangeState(((ZoneStateMachine)stateMachine).zoneBaseState, ptsCaptureBlue, ptsCaptureRed, nbBlueTankIn, nbRedTankIn);
         }
-        if (!boole)
+        
+        //IF CONTESTED //
+        if(nbBlueTankIn > 0 && nbRedTankIn > 0)
         {
-            
+            //transi to contested
         }
 
-
+        ///////// LOGIC ////////
+        ///
+        // BLUE TANKS ARE CAPTURING THE ZONE //
+        if (nbBlueTankIn > 0 && nbRedTankIn == 0)
+        {
+            if (ptsCaptureRed == 0)
+            {
+                if (!isCooldown)
+                {
+                    //increasing cap points and activating cooldown
+                    IncreasePtsCapBlue();
+                    isCooldown = true;
+                }
+                else
+                {
+                   // CooldownTick();
+                }
+            }
+            else
+            {
+                if (!isCooldown)
+                {
+                    DecreasePtsCapRed();
+                    isCooldown = true;
+                }
+                else
+                {
+                   // CooldownTick();
+                }
+            }
+        }
     }
 }

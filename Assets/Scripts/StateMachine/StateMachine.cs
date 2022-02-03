@@ -26,11 +26,6 @@ public class StateMachine : MonoBehaviour
     
     void LateUpdate()
     {
-        if (currentState != null)
-        {
-            currentState.UpdatePhysics();
-        }
-
         // GET A NAME TO DISPLAY DEPENDING ON CURRENT STATE //
         if (currentState.name == "ZoneBaseState")
         {

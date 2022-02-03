@@ -61,6 +61,7 @@ public class ZoneStateMachine : StateMachine
         zoneContestedState = new ZoneContestedState(this);
     }
 
+    //this is the part that gives zoneBaseState as first state !!
     protected override BaseState GetInitialState()
     {
         return zoneBaseState;
